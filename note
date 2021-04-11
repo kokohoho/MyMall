@@ -1,0 +1,76 @@
+搭建步骤总结
+
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+创建vmware虚拟机
+
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+sudo docker run -p 3306:3306 --name mysql \
+-v /mydata/mysql/log:/var/log/mysql \
+-v /mydata/mysql/data:/var/lib/mysql \
+-v /mydata/mysql/conf:/etc/mysql \
+-e MYSQL_ROOT_PASSWORD=root \
+-d mysql:5.7
+
+vim /mydata/mysql/conf/my.cnf
+
+[client]
+default-character-set=utf8
+
+[mysql]
+default-character-set=utf8
+
+[mysqld]
+init_connect='SET collation_connection = utf8_unicode_ci'
+init_connect='SET NAMES utf8'
+character-set-server=utf8
+collation-server=utf8_unicode_ci
+skip-character-set-client-handshake
+skip-name-resolve
+
+docker restart mysql
+
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+mkdir -p /mydata/redis/conf
+touch /mydata/redis/conf/redis.conf
+
+sudo docker run -p 6379:6379 --name redis \
+-v /mydata/redis/data:/data \
+-v /mydata/redis/conf/redis.conf:/etc/redis/redis.conf \
+-d redis redis-server /etc/redis/redis.conf
+
+sudo docker exec -it redis redis-cli
+
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+docker服务自启动，同时启动以下服务
+sudo docker update mysql --restart=always
+sudo docker update redis --restart=always
+
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+将用户加入docker组，就不用每次sudo了
+usermod -a -G docker admin
+
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+配置npm使用淘宝镜像
+npm config set registry http://registry.npm.taobao.org/
+npm config set registry "https://registry.npm.taobao.org"
+
+
+以管理员身份运行
+npm install
+
+无法下载谷歌浏览器驱动，则先单独下载
+npm install chromedriver --chromedriver_cdnurl=http://cdn.npm.taobao.org/dist/chromedriver
+然后继续npm install
+
+npm run dev
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
