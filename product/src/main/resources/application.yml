@@ -4,6 +4,15 @@ spring:
     password: root
     url: jdbc:mysql://192.168.66.11:3306/mymall_pms
     driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.66.11:8848
+      config:
+        server-addr: 192.168.66.11:8848
+  application:
+    name: product
+
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   global-config:
